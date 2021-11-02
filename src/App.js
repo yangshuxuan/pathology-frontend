@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import './App.css';
+import { Button } from "antd";
+import "antd/dist/antd.css";
 import { OpenSeaDragonViewer } from './OpenSeaDragonViewer';
 
 function App() {
@@ -33,6 +35,7 @@ function App() {
        }}
     >
       <div>
+      <Button type="primary">Button</Button>
         <h2>Test Images</h2>
             {images.map((group, index) => {
               return (

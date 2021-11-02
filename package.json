@@ -3,9 +3,11 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@recogito/annotorious-openseadragon": "^2.5.8",
     "@testing-library/jest-dom": "^4.2.4",
     "@testing-library/react": "^9.3.2",
     "@testing-library/user-event": "^7.1.2",
+    "antd": "^4.16.13",
     "openseadragon": "^2.4.2",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
