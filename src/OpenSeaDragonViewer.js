@@ -70,10 +70,8 @@ const OpenSeaDragonViewer = ({
   return (
     <div
       id="openSeaDragon"
-      style={{
-        height: "800px",
-        width: "1200px",
-      }}
+      className="openseadragon-container"
+     
     ></div>
   );
 };

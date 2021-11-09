@@ -29,7 +29,7 @@ import "antd/dist/antd.css";
 //     "@context": "http://www.w3.org/ns/anno.jsonld",
 //     id: "#36bb0d9b-29a7-4147-b75f-c5c26f37477b",
 //   };
-const AnnotationTable = ({ annotable, anno, viewer }) => {
+const AnnotationTable = ({ annotable, anno, viewer ,annotationStatus}) => {
   const dataSource = annotable.map((v) => ({
     category: v.body.find((t) => t.purpose === "category").value,
     id: v.id,
@@ -48,7 +48,8 @@ const AnnotationTable = ({ annotable, anno, viewer }) => {
     },
   ];
   return (
-    <div>
+    <div className= {`annotaglist ${annotationStatus ? "activate-annotaglist" : ""}`} >
+      <h2>标注列表</h2>
       <Table
         onRow={(record, rowIndex) => {
           return {

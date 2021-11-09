@@ -65,13 +65,7 @@ function Label() {
   };
 
   return (
-    <div
-      className="Label"
-      style={{
-        display: "flex",
-        justifyContent: "space-between",
-      }}
-    >
+    <div className="Label">
       {taskListInfo && (
         <TaskList
           taskListInfo={taskListInfo}
@@ -83,7 +77,7 @@ function Label() {
         />
       )}
 
-      <AnnotationTable annotable={annotable} anno={anno} viewer={viewer} />
+      {/* <AnnotationTable annotable={annotable} anno={anno} viewer={viewer} /> */}
 
       <OpenSeaDragonViewer
         viewer={viewer}
