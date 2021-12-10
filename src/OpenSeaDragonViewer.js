@@ -15,6 +15,7 @@ const OpenSeaDragonViewer = ({
   viewer,
   setViewer,
 }) => {
+  const [myImage, setMyImage] = useState();
   if (anno && viewer) {
     anno.off("createAnnotation");
     anno.on("createAnnotation", function (annotation) {
@@ -30,14 +31,16 @@ const OpenSeaDragonViewer = ({
   }
 
   useEffect(() => {
-    if (image && viewer) {
+    // if (image && viewer) {
+    if (myImage && viewer) {
       anno.clearAnnotations();
 
-      viewer.open(image.slide.source);
+      // viewer.open(image.slide.source);
+      viewer.open(myImage);
 
-      image.annotation.forEach((e) => anno.addAnnotation(e));
+      // image.annotation.forEach((e) => anno.addAnnotation(e));
     }
-  }, [image]);
+  }, [image,myImage]);
 
   const InitOpenseadragon = () => {
     viewer && viewer.destroy();
@@ -54,26 +57,31 @@ const OpenSeaDragonViewer = ({
     });
     newViewer.gestureSettingsMouse.clickToZoom = false;
     setViewer(newViewer);
+
+    // newViewer.open(image);
     const anno = Annotorious(newViewer, {
       widgets: [HelloWorldWidget, "TAG", HellowChinaWidget],
     });
     setAnno(anno);
   };
+  const getImages = async () => {
+    const response = await fetch(
+      // "http://127.0.0.1:9001/store/orders/history/?format=json"
+      "http://127.0.0.1:9001/pathology/pathologypictureitems/16/history/?format=json"
+    );
+    const image = await response.json();
+    setMyImage(image);
+  };
 
   useEffect(() => {
     InitOpenseadragon();
+    getImages();
     return () => {
       viewer && viewer.destroy();
     };
   }, []);
 
-  return (
-    <div
-      id="openSeaDragon"
-      className="openseadragon-container"
-     
-    ></div>
-  );
+  return <div id="openSeaDragon" className="openseadragon-container"></div>;
 };
 
 export { OpenSeaDragonViewer };

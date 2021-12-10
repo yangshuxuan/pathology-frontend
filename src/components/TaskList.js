@@ -1,9 +1,10 @@
 import React from "react";
 import ReactDOM from "react-dom";
 import "antd/dist/antd.css";
-// import './index.css';
+import MyDocument from "./MyDocument";
+import { PDFViewer, PDFDownloadLink } from "@react-pdf/renderer";
 import { Tree, Modal } from "antd";
-
+import ReactPDF from "@react-pdf/renderer";
 const treeData = [
   {
     title: "parent 1",
@@ -141,6 +142,7 @@ const TaskList = ({
       setManifest(slide);
       setAnnotable(slide.annotation);
     } else {
+      // ReactPDF.renderToStream(<MyDocument />);
       showModal();
     }
   };
@@ -167,8 +169,17 @@ const TaskList = ({
         onOk={handleOk}
         confirmLoading={confirmLoading}
         onCancel={handleCancel}
+        width={1000}
       >
-        <p>{modalText}</p>
+        {/* <p>{modalText}</p> */}
+        {/* <PDFDownloadLink document={<MyDocument />} fileName="somename.pdf">
+          {({ blob, url, loading, error }) =>
+            loading ? "Loading document..." : "Download now!"
+          }
+        </PDFDownloadLink> */}
+        <PDFViewer width={"100%"} showToolbar={true}>
+          <MyDocument />
+        </PDFViewer>
       </Modal>
     </div>
   );
