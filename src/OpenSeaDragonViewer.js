@@ -1,50 +1,108 @@
 import OpenSeaDragon from "openseadragon";
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import * as Annotorious from "@recogito/annotorious-openseadragon";
-
+import axios from "axios";
 import "@recogito/annotorious-openseadragon/dist/annotorious.min.css";
 import HellowChinaWidget from "./HellowChinaWidget";
 import HelloWorldWidget from "./HelloWorldWidget";
+
+import { largeimageLabelitemsURL,eachlargeimageLabelitemsURL } from "./api";
 
 const OpenSeaDragonViewer = ({
   image,
   setAnnotable,
   annotable,
-  anno,
   setAnno,
-  viewer,
   setViewer,
+  viewer,
+  anno,
+  fromDatabase,
+  setFromDatabase,
 }) => {
-  const [myImage, setMyImage] = useState();
-  if (anno && viewer) {
+  const transform = (e) => {
+    const a = {
+      type: "Annotation",
+      body: [
+        {
+          value: `${e.category}`,
+          purpose: "category",
+        },
+        {
+          type: "TextualBody",
+          value: "afas",
+          purpose: "tagging",
+        },
+        {
+          value: "green",
+          purpose: "highlighting",
+        },
+      ],
+      target: {
+        source: "http://localhost:3001/undefined",
+        selector: {
+          type: "FragmentSelector",
+          conformsTo: "http://www.w3.org/TR/media-frags/",
+          value: `xywh=pixel:${e.x},${e.y},${e.w},${e.h}`,
+        },
+      },
+      "@context": "http://www.w3.org/ns/anno.jsonld",
+      id: `#${e.id}`,
+    };
+    return a;
+  };
+  const extract = (e) => {
+    const [x, y, w, h] = e.target.selector.value.slice(11).split(",");
+    return {
+      category: e.body.find((t) => t.purpose === "category").value,
+      id: e.id.slice(1),
+      x: x,
+      y: y,
+      w: w,
+      h: h,
+    };
+  };
+  useEffect(() => {
+    if (image && viewer && anno) {
+      viewer.open(image);
+    }
+  }, [image]);
+  useEffect(() => {
+    if (annotable.length && viewer && anno && fromDatabase) {
+      // console.log(annotable.length);
+      anno.clearAnnotations();
+      console.log(Array.isArray(annotable) && annotable.length > 0);
+      annotable.forEach((e) => anno.addAnnotation(transform(e)));
+      // console.log(annotable);
+      // console.log(Array.isArray(annotable) && annotable.length > 0);
+      // console.log(annotable);
+      setFromDatabase(false);
+      // console.log(annotable);
+    }
+  }, [annotable]);
+  if (anno) {
     anno.off("createAnnotation");
-    anno.on("createAnnotation", function (annotation) {
-      // setAnnotable([image.annotation]); //这样干是行不通的，为什么呢，因为这个值没有改变，所以触发不了
+    anno.on("createAnnotation", async function (annotation) {
+      console.log(annotation);
       const zoom = viewer.viewport.getZoom();
-      annotation.zoom = zoom;
-      setAnnotable([...annotable, annotation]);
+      const e = extract(annotation);
+      e.zoomLevel = zoom;
+      const pathId = window.location.href.split("/")[3];
+      const f = await axios.post(largeimageLabelitemsURL(pathId),e);
+      setAnnotable([...annotable, f.data]);
     });
     anno.off("deleteAnnotation");
-    anno.on("deleteAnnotation", function (annotation) {
-      setAnnotable(annotable.filter((v) => v.id != annotation.id));
+    anno.on("deleteAnnotation", async function (annotation) {
+      const id = annotation.id.slice(1)
+      console.log(id);
+      await axios.delete(eachlargeimageLabelitemsURL(window.location.href.split("/")[3],id))
+      setAnnotable(annotable.filter((v) => v.id != id));
     });
   }
-
   useEffect(() => {
-    // if (image && viewer) {
-    if (myImage && viewer) {
-      anno.clearAnnotations();
-
-      // viewer.open(image.slide.source);
-      viewer.open(myImage);
-
-      // image.annotation.forEach((e) => anno.addAnnotation(e));
-    }
-  }, [image,myImage]);
-
-  const InitOpenseadragon = () => {
-    viewer && viewer.destroy();
-    const newViewer = OpenSeaDragon({
+    initSeaDragon();
+  }, []);
+  const initSeaDragon = () => {
+    const viewer = OpenSeaDragon({
       id: "openSeaDragon",
       prefixUrl: "openseadragon-images/",
       animationTime: 0.5,
@@ -55,31 +113,18 @@ const OpenSeaDragonViewer = ({
       visibilityRatio: 1,
       zoomPerScroll: 2,
     });
-    newViewer.gestureSettingsMouse.clickToZoom = false;
-    setViewer(newViewer);
 
-    // newViewer.open(image);
-    const anno = Annotorious(newViewer, {
+    viewer.gestureSettingsMouse.clickToZoom = false;
+    setViewer(viewer);
+
+    const anno = Annotorious(viewer, {
       widgets: [HelloWorldWidget, "TAG", HellowChinaWidget],
     });
     setAnno(anno);
-  };
-  const getImages = async () => {
-    const response = await fetch(
-      // "http://127.0.0.1:9001/store/orders/history/?format=json"
-      "http://127.0.0.1:9001/pathology/pathologypictureitems/16/history/?format=json"
-    );
-    const image = await response.json();
-    setMyImage(image);
-  };
 
-  useEffect(() => {
-    InitOpenseadragon();
-    getImages();
-    return () => {
-      viewer && viewer.destroy();
-    };
-  }, []);
+    // viewer.open(image);
+    // annotable.forEach((e) => anno.addAnnotation(e));
+  };
 
   return <div id="openSeaDragon" className="openseadragon-container"></div>;
 };

@@ -1,77 +1,43 @@
 import React, { useState, useEffect } from "react";
-
-import { v4 as uuid_v4 } from "uuid";
-import TaskList from "./components/TaskList";
 import AnnotationTable from "./components/AnnotationTable";
 import { OpenSeaDragonViewer } from "./OpenSeaDragonViewer";
-
+import { largeimageURL,largeimageLabelitemsURL } from "./api";
+import axios from "axios";
 import Nav from "./components/Nav";
 import "./styles/app.scss";
 function App() {
-  const [anno, setAnno] = useState();
-  const [manifest, setManifest] = useState(null);
-  const [slideAnnotations, setSlideAnnotations] = useState([]);
-  const [annotable, setAnnotable] = useState([]);
-  const [viewer, setViewer] = useState(null);
-  const [taskListInfo, setTaskListInfo] = useState();
-  const [tasksInfo, setTasksInfo] = useState([]);
+
+
+  const [annotationStatus, setAnnotationStatus] = useState(false); //控制页面显示
+  const [fromDatabase,setFromDatabase] = useState(false);
+  const [anno, setAnno] = useState(); //大图标注插件
+  const [annotable, setAnnotable] = useState([]); //标注结果列表
+  const [viewer, setViewer] = useState(null); //大图浏览插件
+  const [image, setImage] = useState(); //大图
 
   useEffect(() => {
-    getImages();
+    getImage();
+    getAnnotable();
   }, []);
+  const getImage = async () => {
+    const pathId = window.location.href.split("/")[3]
+    const image = await axios.get(largeimageURL(pathId));
+    setImage(image.data);
 
-  const getImages = async () => {
-    const response = await fetch(
-      "https://openslide-demo.s3.dualstack.us-east-1.amazonaws.com/info.json"
-    );
-    const image = await response.json();
-    // 从每个groups里面提取所有的slide
-    // setTaskListInfo(image.groups.map((g) => ({
-    //   title: g.name,
-    //   key: uuid_v4(),
-    //   children: g.slides.map((s) => ({
-    //     title: s.name,
-    //     key: { ...s, id: uuid_v4(), annotation: [] },
-    //   })),
-    // })));
-    const tasksInfo = image.groups.map((g) => ({
-      ...g,
-      id: uuid_v4(),
-      slides: g.slides.map((slide) => ({
-        ...slide,
-        id: uuid_v4(),
-        annotation: [],
-      })),
-    }));
-    setTasksInfo(tasksInfo);
-
-    setTaskListInfo(
-      tasksInfo.map((g) => ({
-        title: g.name,
-        key: g.id,
-        // disabled: true,
-        children: g.slides.map((s) => ({
-          title: s.name,
-          key: s.id,
-          isLeaf: true,
-        })),
-      }))
-    );
-    setSlideAnnotations(
-      image.groups
-        .map((g) =>
-          g.slides.map((slide) => ({ ...slide, id: uuid_v4(), annotation: [] }))
-        )
-        .flat()
-    );
   };
-  const [libraryStatus, setLibraryStatus] = useState(false);
-  const [annotationStatus, setAnnotationStatus] = useState(false);
+  const getAnnotable = async () => {
+    const pathId = window.location.href.split("/")[3]
+    const image = await axios.get(largeimageLabelitemsURL(pathId));
+    setFromDatabase(true);
+    setAnnotable([...annotable,...image.data]);
+    // console.log(annotable);
+    
+
+  };
+
   return (
-    <div className={`App ${libraryStatus ? "library-active" : ""} ${annotationStatus ? "annotaglist-active" : ""}`}>
+    <div className={`App ${annotationStatus ? "annotaglist-active" : ""}`}>
       <Nav
-        libraryStatus={libraryStatus}
-        setLibraryStatus={setLibraryStatus}
         annotationStatus={annotationStatus}
         setAnnotationStatus={setAnnotationStatus}
       />
@@ -80,23 +46,19 @@ function App() {
         setViewer={setViewer}
         anno={anno}
         setAnno={setAnno}
-        image={manifest}
-        slideAnnotations={slideAnnotations}
+        image={image}
         setAnnotable={setAnnotable}
         annotable={annotable}
+        fromDatabase = {fromDatabase}
+        setFromDatabase = {setFromDatabase}
+        
       />
-      {taskListInfo && (
-        <TaskList
-          taskListInfo={taskListInfo}
-          tasksInfo={tasksInfo}
-          setManifest={setManifest}
-          manifest={manifest}
-          annotable={annotable}
-          libraryStatus={libraryStatus}
-          setAnnotable={setAnnotable}
-        />
-      )}
-      <AnnotationTable annotable={annotable} anno={anno} viewer={viewer} annotationStatus={annotationStatus} />
+      <AnnotationTable
+        annotable={annotable}
+        anno={anno}
+        viewer={viewer}
+        annotationStatus={annotationStatus}
+      />
     </div>
   );
 }

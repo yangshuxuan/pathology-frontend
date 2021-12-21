@@ -31,8 +31,9 @@ import "antd/dist/antd.css";
 //   };
 const AnnotationTable = ({ annotable, anno, viewer ,annotationStatus}) => {
   const dataSource = annotable.map((v) => ({
-    category: v.body.find((t) => t.purpose === "category").value,
+    category: v.category,
     id: v.id,
+    key:v.id
   }));
 
   const columns = [
@@ -54,11 +55,11 @@ const AnnotationTable = ({ annotable, anno, viewer ,annotationStatus}) => {
         onRow={(record, rowIndex) => {
           return {
             onClick: (event) => {
-              anno.panTo(record.id, false);
+              anno.panTo(`#${record.id}`, false);
               const p = annotable.find(v => v.id === record.id)
-              console.log(p);
-              viewer.viewport.zoomTo(p.zoom);
-              console.log(record);
+              // console.log(p);
+              viewer.viewport.zoomTo(p.zoomLevel);
+              // console.log(record);
             }, // click row
             onDoubleClick: (event) => {}, // double click row
             onContextMenu: (event) => {}, // right button click row

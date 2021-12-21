@@ -4,10 +4,7 @@ import "./HelloWorldWidget.css";
 import "antd/dist/antd.css";
 const HellowChinaWidget = (props) => {
   const options = [
-    { id: 1, name: "Volvo" },
-    { id: 2, name: "Saab" },
-    { id: 3, name: "Opel" },
-    { id: 4, name: "Audi" },
+    { id: 'M', name: "真菌" }
   ];
   const purpose = "category";
   const currentCategory = props.annotation
