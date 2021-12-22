@@ -1,4 +1,4 @@
-const base_url = "http://127.0.0.1:9001/";
+const base_url = `http://${window.location.href.split("/")[2]}/`;
 
 const getCurrentMonth = () => {
   const month = new Date().getMonth() + 1;
