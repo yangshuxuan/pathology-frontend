@@ -5,101 +5,65 @@ import MyDocument from "./MyDocument";
 import { PDFViewer, PDFDownloadLink } from "@react-pdf/renderer";
 import { Tree, Modal } from "antd";
 import ReactPDF from "@react-pdf/renderer";
-const treeData = [
-  {
-    title: "parent 1",
-    key: "0-0",
-    children: [
-      {
-        title: "parent 1-0",
-        key: "0-0-0",
-        disabled: true,
-        children: [
-          {
-            title: "leaf",
-            key: "0-0-0-0",
-            disableCheckbox: true,
-          },
-          {
-            title: "leaf",
-            key: "0-0-0-1",
-          },
-        ],
-      },
-      {
-        title: "parent 1-1",
-        key: "0-0-1",
-        children: [
-          {
-            title: (
-              <span
-                style={{
-                  color: "#1890ff",
-                }}
-              >
-                sss
-              </span>
-            ),
-            key: "0-0-1-0",
-          },
-        ],
-      },
-    ],
-  },
-  {
-    title: "parent 1",
-    key: "0-0",
-    children: [
-      {
-        title: "parent 1-0",
-        key: "0-0-0",
-        disabled: true,
-        children: [
-          {
-            title: "leaf",
-            key: "0-0-0-0",
-            disableCheckbox: true,
-          },
-          {
-            title: "leaf",
-            key: "0-0-0-1",
-          },
-        ],
-      },
-      {
-        title: "parent 1-1",
-        key: "0-0-1",
-        children: [
-          {
-            title: (
-              <span
-                style={{
-                  color: "#1890ff",
-                }}
-              >
-                sss
-              </span>
-            ),
-            key: "0-0-1-0",
-          },
-        ],
-      },
-    ],
-  },
-];
-
-const TaskList = ({
-  taskListInfo,
-  tasksInfo,
-  annotable,
-  manifest,
-  setManifest,
-  setAnnotable,
-  libraryStatus,
-}) => {
+// const treeData = [
+//   {
+//     title: 'parent 1',
+//     key: '0-0',
+//     children: [
+//       {
+//         title: 'parent 1-0',
+//         key: '0-0-0',
+//         disabled: true,
+//         children: [
+//           {
+//             title: 'leaf',
+//             key: '0-0-0-0',
+//             disableCheckbox: true,
+//           },
+//           {
+//             title: 'leaf',
+//             key: '0-0-0-1',
+//           },
+//         ],
+//       },
+//       {
+//         title: 'parent 1-1',
+//         key: '0-0-1',
+//         children: [
+//           {
+//             title: (
+//               <span
+//                 style={{
+//                   color: '#1890ff',
+//                 }}
+//               >
+//                 sss
+//               </span>
+//             ),
+//             key: '0-0-1-0',
+//           },
+//         ],
+//       },
+//     ],
+//   },
+// ];
+const TaskList = ({ libraryStatus, diagnoses, setCurDiagnosisItem }) => {
   const [visible, setVisible] = React.useState(false);
   const [confirmLoading, setConfirmLoading] = React.useState(false);
   const [modalText, setModalText] = React.useState("Content of the modal");
+  console.log(diagnoses);
+
+  const treeData2 = diagnoses.map((g) => ({
+    title: `诊断：${g.patient.name}`,
+    key: g.id,
+
+    children: g.items.map((s) => ({
+      title: `图片:${s.pathologyPicture.description}`,
+      key: `${g.id}-${s.id}`,
+      isLeaf: true,
+    })),
+  }));
+  console.log(treeData2);
 
   const showModal = () => {
     setVisible(true);
@@ -118,33 +82,13 @@ const TaskList = ({
     console.log("Clicked cancel button");
     setVisible(false);
   };
-  console.log(tasksInfo);
-  const searchSlide = (id) => {
-    for (const g of tasksInfo) {
-      for (const slide of g.slides) {
-        if (slide.id === id) {
-          return slide;
-        }
-      }
-    }
-  };
-
   const onSelect = (selectedKeys, info) => {
-    console.log(selectedKeys);
-    console.log("selected", selectedKeys, info);
     if (info.node.isLeaf) {
-      if (manifest) {
-        manifest.annotation = annotable; //将新的标注信息更新到图像中
-      }
-      const slide = searchSlide(selectedKeys[0]);
-      console.log(slide);
-
-      setManifest(slide);
-      setAnnotable(slide.annotation);
-    } else {
-      // ReactPDF.renderToStream(<MyDocument />);
-      showModal();
+      console.log(info.node.key.split("-")[1]);
+      setCurDiagnosisItem(info.node.key.split("-")[1]);
     }
+    // setCurDiagnosisItem(2)
+    console.log("selected", selectedKeys, info);
   };
 
   const onCheck = (checkedKeys, info) => {
@@ -153,15 +97,15 @@ const TaskList = ({
 
   return (
     <div className={`library ${libraryStatus ? "activate-library" : ""}`}>
-      <h2>任务列表</h2>
+      <h2>诊断列表</h2>
       <Tree
-        //   checkable
-        //   defaultExpandedKeys={['0-0-0', '0-0-1']}
-        //   defaultSelectedKeys={['0-0-0', '0-0-1']}
-        //   defaultCheckedKeys={['0-0-0', '0-0-1']}
+        // checkable
+        // defaultExpandedKeys={['0-0-0', '0-0-1']}
+        // defaultSelectedKeys={['0-0-0', '0-0-1']}
+        // defaultCheckedKeys={['0-0-0', '0-0-1']}
         onSelect={onSelect}
         onCheck={onCheck}
-        treeData={taskListInfo}
+        treeData={treeData2}
       />
       <Modal
         title="Title"
