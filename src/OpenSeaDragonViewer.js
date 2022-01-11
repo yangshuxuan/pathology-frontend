@@ -1,3 +1,4 @@
+/* eslint-disable */
 import OpenSeaDragon from "openseadragon";
 import React, { useEffect } from "react";
 import * as Annotorious from "@recogito/annotorious-openseadragon";
