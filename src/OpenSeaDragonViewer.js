@@ -7,7 +7,7 @@ import "@recogito/annotorious-openseadragon/dist/annotorious.min.css";
 import HellowChinaWidget from "./HellowChinaWidget";
 import HelloWorldWidget from "./HelloWorldWidget";
 
-import { largeimageLabelitemsURL,eachlargeimageLabelitemsURL } from "./api";
+import { largeimageLabelitemsURL, eachlargeimageLabelitemsURL } from "./api";
 
 const OpenSeaDragonViewer = ({
   image,
@@ -19,6 +19,7 @@ const OpenSeaDragonViewer = ({
   anno,
   fromDatabase,
   setFromDatabase,
+  curDiagnosisItem,
 }) => {
   const transform = (e) => {
     const a = {
@@ -68,7 +69,7 @@ const OpenSeaDragonViewer = ({
     }
   }, [image]);
   useEffect(() => {
-    if (annotable.length && viewer && anno && fromDatabase) {
+    if (viewer && anno && fromDatabase) {
       // console.log(annotable.length);
       anno.clearAnnotations();
       console.log(Array.isArray(annotable) && annotable.length > 0);
@@ -80,22 +81,21 @@ const OpenSeaDragonViewer = ({
       // console.log(annotable);
     }
   }, [annotable]);
-  if (anno) {
+  if (anno && curDiagnosisItem) {
     anno.off("createAnnotation");
     anno.on("createAnnotation", async function (annotation) {
-      console.log(annotation);
       const zoom = viewer.viewport.getZoom();
       const e = extract(annotation);
       e.zoomLevel = zoom;
-      const pathId = window.location.href.split("/")[3];
-      const f = await axios.post(largeimageLabelitemsURL(pathId),e);
+      const pathId = curDiagnosisItem;
+      const f = await axios.post(largeimageLabelitemsURL(pathId), e);
       setAnnotable([...annotable, f.data]);
     });
     anno.off("deleteAnnotation");
     anno.on("deleteAnnotation", async function (annotation) {
-      const id = annotation.id.slice(1)
-      console.log(id);
-      await axios.delete(eachlargeimageLabelitemsURL(window.location.href.split("/")[3],id))
+      const id = annotation.id.slice(1);
+
+      await axios.delete(eachlargeimageLabelitemsURL(curDiagnosisItem, id));
       setAnnotable(annotable.filter((v) => v.id != id));
     });
   }
@@ -122,9 +122,6 @@ const OpenSeaDragonViewer = ({
       widgets: [HelloWorldWidget, "TAG", HellowChinaWidget],
     });
     setAnno(anno);
-
-    // viewer.open(image);
-    // annotable.forEach((e) => anno.addAnnotation(e));
   };
 
   return <div id="openSeaDragon" className="openseadragon-container"></div>;
