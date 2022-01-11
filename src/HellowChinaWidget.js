@@ -1,3 +1,4 @@
+/* eslint-disable */
 import React from "preact/compat";
 import { Button } from "antd";
 import "./HelloWorldWidget.css";

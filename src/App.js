@@ -1,3 +1,4 @@
+/* eslint-disable */
 import React, { useState, useEffect } from "react";
 import AnnotationTable from "./components/AnnotationTable";
 import TaskList from "./components/TaskList";
