@@ -1,8 +1,6 @@
-
 const base_url = "http://139.198.169.75:8072/";
-// const base_url = "http://155.138.159.177:8072/";
+// const base_url = "http://155.138.159.177/";
 // const base_url = "http://localhost:9001/";
-
 
 const getCurrentMonth = () => {
   const month = new Date().getMonth() + 1;
@@ -50,5 +48,5 @@ export const largeimageLabelitemsURL = (diagnosisitem) =>
 export const eachlargeimageLabelitemsURL = (diagnosisitem, id) =>
   `${base_url}pathology/diagnosisitems/${diagnosisitem}/labelitems/${id}/`;
 
-export const diagnosesURL = () =>
-  `${base_url}pathology/diagnoses/`;
+export const diagnosesURL = () => `${base_url}pathology/diagnoses/`;
+export const loginURL = () => `${base_url}auth/jwt/create/`;

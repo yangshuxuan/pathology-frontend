@@ -19,6 +19,7 @@ const OpenSeaDragonViewer = ({
   fromDatabase,
   setFromDatabase,
   curDiagnosisItem,
+  token
 }) => {
   const transform = (e) => {
     const a = {
@@ -87,14 +88,27 @@ const OpenSeaDragonViewer = ({
       const e = extract(annotation);
       e.zoomLevel = zoom;
       const pathId = curDiagnosisItem;
-      const f = await axios.post(largeimageLabelitemsURL(pathId), e);
+      const headers = {
+        "Content-Type": "application/json",
+        Authorization: `JWT ${token.access}`,
+      };
+      
+      const f = await axios.post(largeimageLabelitemsURL(pathId), e, {
+        headers: headers,
+      });
       setAnnotable([...annotable, f.data]);
     });
     anno.off("deleteAnnotation");
     anno.on("deleteAnnotation", async function (annotation) {
       const id = annotation.id.slice(1);
+      const headers = {
+        "Content-Type": "application/json",
+        Authorization: `JWT ${token.access}`,
+      };
 
-      await axios.delete(eachlargeimageLabelitemsURL(curDiagnosisItem, id));
+      await axios.delete(eachlargeimageLabelitemsURL(curDiagnosisItem, id), {
+        headers: headers,
+      });
       setAnnotable(annotable.filter((v) => v.id != id));
     });
   }

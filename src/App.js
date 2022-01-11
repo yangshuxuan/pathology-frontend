@@ -5,6 +5,7 @@ import { OpenSeaDragonViewer } from "./OpenSeaDragonViewer";
 import { largeimageURL, largeimageLabelitemsURL, diagnosesURL } from "./api";
 import axios from "axios";
 import Nav from "./components/Nav";
+import Demo from "./components/Login/Login2";
 import "./styles/app.scss";
 function App() {
   const [annotationStatus, setAnnotationStatus] = useState(false); //控制页面显示
@@ -17,6 +18,8 @@ function App() {
   const [image, setImage] = useState(); //大图
   const [curDiagnosisItem, setCurDiagnosisItem] = useState();
 
+  const [token, setToken] = useState();
+
   useEffect(() => {
     curDiagnosisItem &&
       getImage(curDiagnosisItem) &&
@@ -25,24 +28,41 @@ function App() {
   useEffect(() => {
     // getImage();
     // getAnnotable();
-    getDiagnoses();
-  }, []);
+    if (token) {
+      getDiagnoses();
+    }
+  }, [token]);
   const getDiagnoses = async () => {
-    const diagnoses = await axios.get(diagnosesURL());
+    const headers = {
+      "Content-Type": "application/json",
+      Authorization: `JWT ${token.access}`,
+    };
+    const diagnoses = await axios.get(diagnosesURL(), { headers: headers });
     setDiagnoses(diagnoses.data);
   };
   const getImage = async (pathId) => {
-    // const pathId = window.location.href.split("/")[3];
-    const image = await axios.get(largeimageURL(pathId));
+    const headers = {
+      "Content-Type": "application/json",
+      Authorization: `JWT ${token.access}`,
+    };
+    const image = await axios.get(largeimageURL(pathId), { headers: headers });
     setImage(image.data);
   };
   const getAnnotable = async (pathId) => {
-    // const pathId = window.location.href.split("/")[3];
-    const image = await axios.get(largeimageLabelitemsURL(pathId));
+    const headers = {
+      "Content-Type": "application/json",
+      Authorization: `JWT ${token.access}`,
+    };
+    const image = await axios.get(largeimageLabelitemsURL(pathId), {
+      headers: headers,
+    });
     setFromDatabase(true);
     setAnnotable(image.data);
     // console.log(annotable);
   };
+  if (!token) {
+    return <Demo setToken={setToken} />;
+  }
 
   return (
     <div
@@ -57,6 +77,7 @@ function App() {
         setLibraryStatus={setLibraryStatus}
       />
       <OpenSeaDragonViewer
+        token={token}
         viewer={viewer}
         setViewer={setViewer}
         anno={anno}
@@ -66,7 +87,7 @@ function App() {
         annotable={annotable}
         fromDatabase={fromDatabase}
         setFromDatabase={setFromDatabase}
-        curDiagnosisItem = {curDiagnosisItem}
+        curDiagnosisItem={curDiagnosisItem}
       />
       <AnnotationTable
         annotable={annotable}
@@ -79,7 +100,6 @@ function App() {
         diagnoses={diagnoses}
         libraryStatus={libraryStatus}
         setCurDiagnosisItem={setCurDiagnosisItem}
-        
       />
     </div>
   );
