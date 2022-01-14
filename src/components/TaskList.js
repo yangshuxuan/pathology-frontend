@@ -48,11 +48,11 @@ import ReactPDF from "@react-pdf/renderer";
 //     ],
 //   },
 // ];
-const TaskList = ({ libraryStatus, diagnoses, setCurDiagnosisItem }) => {
+const TaskList = ({ libraryStatus, diagnoses, setCurDiagnosisItem,setCurDiagnosis }) => {
   const [visible, setVisible] = React.useState(false);
   const [confirmLoading, setConfirmLoading] = React.useState(false);
   const [modalText, setModalText] = React.useState("Content of the modal");
-  console.log(diagnoses);
+  // console.log(diagnoses);
 
   const treeData2 = diagnoses.map((g) => ({
     title: `诊断：${g.patient.name}`,
@@ -64,7 +64,7 @@ const TaskList = ({ libraryStatus, diagnoses, setCurDiagnosisItem }) => {
       isLeaf: true,
     })),
   }));
-  console.log(treeData2);
+  // console.log(treeData2);
 
   const showModal = () => {
     setVisible(true);
@@ -85,8 +85,9 @@ const TaskList = ({ libraryStatus, diagnoses, setCurDiagnosisItem }) => {
   };
   const onSelect = (selectedKeys, info) => {
     if (info.node.isLeaf) {
-      console.log(info.node.key.split("-")[1]);
+      
       setCurDiagnosisItem(info.node.key.split("-")[1]);
+      setCurDiagnosis(info.node.key.split("-")[0])
     }
     // setCurDiagnosisItem(2)
     console.log("selected", selectedKeys, info);

@@ -14,21 +14,21 @@ function App() {
   const [fromDatabase, setFromDatabase] = useState(false);
   const [anno, setAnno] = useState(); //大图标注插件
   const [annotable, setAnnotable] = useState([]); //标注结果列表
+  const [historyannotable, setHistoryannotable] = useState([]); //历史标注结果列表
   const [diagnoses, setDiagnoses] = useState([]); //待诊断列表
   const [viewer, setViewer] = useState(null); //大图浏览插件
   const [image, setImage] = useState(); //大图
   const [curDiagnosisItem, setCurDiagnosisItem] = useState();
+  const [curDiagnosis, setCurDiagnosis] = useState();
 
   const [token, setToken] = useState();
 
   useEffect(() => {
     curDiagnosisItem &&
       getImage(curDiagnosisItem) &&
-      getAnnotable(curDiagnosisItem);
+      getAnnotable(curDiagnosisItem) 
   }, [curDiagnosisItem]);
   useEffect(() => {
-    // getImage();
-    // getAnnotable();
     if (token) {
       getDiagnoses();
     }
@@ -57,10 +57,15 @@ function App() {
     const image = await axios.get(largeimageLabelitemsURL(pathId), {
       headers: headers,
     });
+    const historyimage = await axios.get(largeimageLabelitemsURL(pathId,true), {
+      headers: headers,
+    });
     setFromDatabase(true);
+    setHistoryannotable(historyimage.data);
     setAnnotable(image.data);
-    // console.log(annotable);
+    
   };
+
   if (!token) {
     return <Demo setToken={setToken} />;
   }
@@ -86,21 +91,27 @@ function App() {
         image={image}
         setAnnotable={setAnnotable}
         annotable={annotable}
+        historyannotable={historyannotable}
         fromDatabase={fromDatabase}
         setFromDatabase={setFromDatabase}
         curDiagnosisItem={curDiagnosisItem}
       />
       <AnnotationTable
         annotable={annotable}
+        historyannotable={historyannotable}
         anno={anno}
         viewer={viewer}
         annotationStatus={annotationStatus}
+        token={token}
+        curDiagnosis={curDiagnosis}
       />
 
       <TaskList
         diagnoses={diagnoses}
+        setCurDiagnosis={setCurDiagnosis}
         libraryStatus={libraryStatus}
         setCurDiagnosisItem={setCurDiagnosisItem}
+        token={token}
       />
     </div>
   );

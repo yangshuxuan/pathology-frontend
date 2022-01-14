@@ -13,6 +13,7 @@ const OpenSeaDragonViewer = ({
   image,
   setAnnotable,
   annotable,
+  historyannotable,
   setAnno,
   setViewer,
   viewer,
@@ -71,15 +72,13 @@ const OpenSeaDragonViewer = ({
   }, [image]);
   useEffect(() => {
     if (viewer && anno && fromDatabase) {
-      // console.log(annotable.length);
+
       anno.clearAnnotations();
-      console.log(Array.isArray(annotable) && annotable.length > 0);
-      annotable.forEach((e) => anno.addAnnotation(transform(e)));
-      // console.log(annotable);
-      // console.log(Array.isArray(annotable) && annotable.length > 0);
-      // console.log(annotable);
+
+      [...annotable,...historyannotable].forEach((e) => anno.addAnnotation(transform(e)));
+
       setFromDatabase(false);
-      // console.log(annotable);
+
     }
   }, [annotable]);
   if (anno && curDiagnosisItem) {
