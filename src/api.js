@@ -1,5 +1,5 @@
-const base_url = `http://${window.location.href.split("/")[2]}/`
-// const base_url = "http://139.198.169.75:8072/";
+// const base_url = `http://${window.location.href.split("/")[2]}/`
+const base_url = "http://139.198.169.75:8072/";
 // const base_url = "http://155.138.159.177/";
 // const base_url = "http://localhost:9001/";
 

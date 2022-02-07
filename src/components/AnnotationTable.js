@@ -40,10 +40,13 @@ const AnnotationTable = ({
           reportSet.data[0].labelitems.filter((v) => historyannotableID.some((p) =>v == p))
         );
         setReportID(reportSet.data[0].id);
+        console.log(reportSet.data[0].id);
+        console.log(curDiagnosis);
+        console.log(reportSet.data);
       }
     }
     fetchData();
-  }, [annotable,curDiagnosis]);
+  }, [annotable,historyannotable,curDiagnosis]);
   useEffect(() => {
     async function patchData() {
       if (reportID) {
@@ -61,7 +64,7 @@ const AnnotationTable = ({
       }
     }
     patchData();
-  }, [oneSelectedRowKeys, twoSelectedRowKeys]);
+  }, [reportID,oneSelectedRowKeys, twoSelectedRowKeys]);
   const dataSource = annotable.map((v) => ({
     category: v.category,
     id: v.id.split("-")[0],
