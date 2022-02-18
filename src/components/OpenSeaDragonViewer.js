@@ -70,7 +70,7 @@ const OpenSeaDragonViewer = ({
   const [image, setImage] = useState(); //大图
 
   const location = useLocation();
-  const curDiagnosisItem = location.pathname.split("/")[2];
+  const curDiagnosisItem = location.pathname.split("/")[3];
   const getImage = async (pathId) => {
     const headers = {
       "Content-Type": "application/json",

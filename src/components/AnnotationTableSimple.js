@@ -20,7 +20,7 @@ const AnnotationTableSimple = ({
   const [oneSelectedRowKeys, setOneSelectedRowKeys] = useState([]);
   const [twoSelectedRowKeys, setTwoSelectedRowKeys] = useState([]);
   const [reportID, setReportID] = useState(0);
-  const curDiagnosis = location.pathname.split("/")[2];
+  const curDiagnosis = location.pathname.split("/")[3];
   const getAnnotable = async (pathId) => {
     const headers = {
       "Content-Type": "application/json",

@@ -42,7 +42,7 @@ const Report = ({ token }) => {
   const [realbiaoben, setrealbiaoben] = useState([]);
   const [advice, setAdvice] = useState("");
   const [reportID, setReportID] = useState(0);
-  const curDiagnosis = location.pathname.split("/")[2];
+  const curDiagnosis = location.pathname.split("/")[3];
   const onChange = (checkedValues) => {
     setrealbiaoben(checkedValues);
   };
