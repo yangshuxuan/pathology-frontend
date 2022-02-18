@@ -1,6 +1,6 @@
 * {
   margin: 0;
-  
+
   padding: 0;
   box-sizing: border-box;
 }
@@ -19,7 +19,6 @@ h4 {
 }
 .App {
   transition: all 0.5s ease;
-  
 }
 .library-active {
   margin-right: 20%;
@@ -27,10 +26,35 @@ h4 {
 .annotaglist-active {
   margin-left: 20%;
 }
+// .site-layout-content {
+//   min-height: 280px;
+//   padding: 24px;
+//   background: #fff;
+// }
+.logo {
+  float: left;
+  width: 120px;
+  height: 31px;
+  margin: 16px 24px 16px 0;
+  background: rgba(255, 255, 255, 0.3);
+}
+.ant-row-rtl .logo {
+  float: right;
+  margin: 16px 0 16px 24px;
+}
+// [data-theme="dark"] .site-layout-content {
+//   background: #141414;
+// }
+.content-container {
+  min-height: 86vh;
+  width: 100%;
+}
 @import "./song";
 @import "./player";
 @import "./library";
 @import "./nav";
 @import "./annotaglist";
 @import "./openSeaDragon";
-@import "./login2"
+@import "./login2";
+@import "./todolist";
+@import "./completedlist";

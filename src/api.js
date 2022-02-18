@@ -43,7 +43,7 @@ export const imagesURL = () =>
 export const largeimageURL = (diagnosisitem) =>
   `${base_url}pathology/diagnosisitems/${diagnosisitem}/image_detail/?format=json`;
 
-export const largeimageLabelitemsURL = (diagnosisitem,others=false) =>
+export const largeimageLabelitemsURL = (diagnosisitem, others = false) =>
   `${base_url}pathology/diagnosisitems/${diagnosisitem}/labelitems/?others=${others}`;
 
 export const eachlargeimageLabelitemsURL = (diagnosisitem, id) =>
@@ -51,5 +51,9 @@ export const eachlargeimageLabelitemsURL = (diagnosisitem, id) =>
 
 export const diagnosesURL = () => `${base_url}pathology/diagnoses/`;
 export const loginURL = () => `${base_url}auth/jwt/create/`;
-export const reportSetURL = (diagnosis) => `${base_url}pathology/report/?diagnosis_id=${diagnosis}`;
+export const reportSetURL = (diagnosis) =>
+  `${base_url}pathology/report/?diagnosis_id=${diagnosis}`;
 export const reportOneURL = (id) => `${base_url}pathology/report/${id}/`;
+
+export const reportDocURL = (report__id) =>
+  `${base_url}pathology/generatedoc?report__id=${report__id}`;
