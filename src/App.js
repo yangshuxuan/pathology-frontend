@@ -93,13 +93,13 @@ function App() {
       </Header>
 
       <Switch location={location} key={location.pathname}>
-        <Route path="/" exact>
+        <Route path="/label/" exact>
           <div className="content-container">
             <ToDoList token={token} />
             <CompletedList />
           </div>
         </Route>
-        <Route path="/work/:id">
+        <Route path="/label/work/:id">
           {/* <OpenSeaDragonViewer
             token={token}
             viewer={viewer}
