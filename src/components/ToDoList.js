@@ -84,7 +84,7 @@ const columns = [
     dataIndex: "itemid",
     render: (itemid) => (
       <Space size="middle">
-        <Link to={`/work/${itemid}`}>2. Our Work</Link>
+        <Link to={`/label/work/${itemid}`}>2. Our Work</Link>
       </Space>
     ),
   },
