@@ -49,7 +49,12 @@ export const largeimageLabelitemsURL = (diagnosisitem, others = false) =>
 export const eachlargeimageLabelitemsURL = (diagnosisitem, id) =>
   `${base_url}pathology/diagnosisitems/${diagnosisitem}/labelitems/${id}/`;
 
-export const diagnosesURL = () => `${base_url}pathology/diagnoses/`;
+export const diagnosesURL = (pagination,isFinished=false) => {
+  return `${base_url}pathology/diagnoses/?isFinished=${isFinished}&limit=${pagination.pageSize}&offset=${(pagination.current-1)*pagination.pageSize}`;
+};
+export const eachDiagnoseURL = (id) => {
+  return `${base_url}pathology/diagnoses/${id}/`;
+};
 export const loginURL = () => `${base_url}auth/jwt/create/`;
 export const reportSetURL = (diagnosis) =>
   `${base_url}pathology/report/?diagnosis_id=${diagnosis}`;

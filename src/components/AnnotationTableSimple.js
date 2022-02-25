@@ -54,9 +54,7 @@ const AnnotationTableSimple = ({
           headers: headers,
         });
         const annotableID = annotable.map((v) => v.id);
-        console.log(annotableID);
-        console.log(reportSet.data[0].labelitems);
-        console.log(reportSet.data[0].labelitems.filter((v) => annotableID.some((p) =>v == p)));
+
         setOneSelectedRowKeys(
           reportSet.data[0].labelitems.filter((v) => annotableID.some((p) =>v == p))
         );
@@ -65,9 +63,9 @@ const AnnotationTableSimple = ({
           reportSet.data[0].labelitems.filter((v) => historyannotableID.some((p) =>v == p))
         );
         setReportID(reportSet.data[0].id);
-        console.log(reportSet.data[0].id);
-        console.log(curDiagnosis);
-        console.log(reportSet.data);
+        // console.log(reportSet.data[0].id);
+        // console.log(curDiagnosis);
+        // console.log(reportSet.data);
       }
     }
     fetchData();

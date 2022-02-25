@@ -116,6 +116,32 @@ const OpenSeaDragonViewer = ({
       });
       setAnnotable([...annotable, f.data]);
     });
+    anno.off("updateAnnotation");
+    anno.on("updateAnnotation", async function (annotation, previous) {
+      const zoom = viewer.viewport.getZoom();
+      const e = extract(annotation);
+      e.zoomLevel = zoom;
+
+      const headers = {
+        "Content-Type": "application/json",
+        Authorization: `JWT ${token.access}`,
+      };
+      console.log(e);
+
+      await axios.patch(
+        eachlargeimageLabelitemsURL(curDiagnosisItem, e.id),
+        { category: e.category },
+        {
+          headers: headers,
+        }
+      );
+      const index = annotable.findIndex((v) => v.id == e.id);
+
+      annotable[index].category = e.category;
+      console.log(annotable[index]);
+      setAnnotable([...annotable]);
+      // setAnnotable([...annotable.slice(0, index), e, ...annotable.slice(index + 1)]);
+    });
     anno.off("deleteAnnotation");
     anno.on("deleteAnnotation", async function (annotation) {
       const id = annotation.id.slice(1);

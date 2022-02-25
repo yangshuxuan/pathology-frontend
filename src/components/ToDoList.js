@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { Table, Tag, Space } from "antd";
 import { Link } from "react-router-dom";
+import { Button } from "antd";
 import axios from "axios";
-import { diagnosesURL } from "../api";
+import { diagnosesURL, eachDiagnoseURL } from "../api";
 // const columns = [
 //   {
 //     title: "Name",
@@ -52,59 +53,115 @@ import { diagnosesURL } from "../api";
 //     ),
 //   },
 // ];
-const columns = [
-  {
-    title: "诊断标识",
-    dataIndex: "id",
-    key: "id",
-  },
-  {
-    title: "患者姓名",
-    dataIndex: "name",
-    key: "name",
-  },
-  {
-    title: "患者年龄",
-    dataIndex: "age",
-    key: "age",
-  },
-  {
-    title: "患者性别",
-    dataIndex: "sex",
-    key: "sex",
-  },
-  {
-    title: "图片描述",
-    dataIndex: "description",
-    key: "description",
-  },
-  {
-    title: "诊断项",
-    key: "itemid",
-    dataIndex: "itemid",
-    render: (itemid) => (
-      <Space size="middle">
-        <Link to={`/label/work/${itemid}`}>2. Our Work</Link>
-      </Space>
-    ),
-  },
-];
-const ToDoList = ({ token }) => {
-  console.log(token);
+
+const ToDoList = ({
+  token,
+  syncBetween,
+  setSyncBetween,
+  setOtherSyncBetween,
+}) => {
   const [diagnoses, setDiagnoses] = useState([]); //待诊断列表
+  const [pagination, setPagination] = useState({
+    current: 1,
+    pageSize: 4,
+  });
+  const [loading, setLoading] = useState(false);
+
+  const columns = [
+    {
+      title: "诊断标识",
+      dataIndex: "id",
+      key: "id",
+    },
+    {
+      title: "患者姓名",
+      dataIndex: "name",
+      key: "name",
+    },
+    {
+      title: "患者年龄",
+      dataIndex: "age",
+      key: "age",
+    },
+    {
+      title: "患者性别",
+      dataIndex: "sex",
+      key: "sex",
+    },
+    {
+      title: "图片描述",
+      dataIndex: "description",
+      key: "description",
+    },
+    {
+      title: "诊断项",
+      key: "itemid",
+      dataIndex: "itemid",
+      render: (itemid, id) => (
+        <Space size="small">
+          <Link to={`/label/work/${itemid}`}>诊断</Link>
+        </Space>
+      ),
+    },
+    {
+      title: "Action",
+      key: "id-2",
+      dataIndex: "id",
+      render: (id) => (
+        <Space size="small">
+          <Button type="link" onClick={handleDiagnoseFinished(id)}>
+            完成
+          </Button>
+        </Space>
+      ),
+    },
+  ];
   useEffect(() => {
-    console.log(token);
     if (token) {
-      getDiagnoses();
+      getDiagnoses(pagination);
     }
   }, [token]);
-  const getDiagnoses = async () => {
+  useEffect(() => {
+    if (syncBetween) {
+      getDiagnoses(pagination);
+      setSyncBetween(false);
+    }
+  }, [syncBetween]);
+
+  const handleDiagnoseFinished = (id) => {
+    return () => {
+      async function patchData() {
+        const headers = {
+          "Content-Type": "application/json",
+          Authorization: `JWT ${token.access}`,
+        };
+        await axios.patch(
+          eachDiagnoseURL(id),
+          { isFinished: true },
+          {
+            headers: headers,
+          }
+        );
+        getDiagnoses(pagination);
+        setOtherSyncBetween(true);
+      }
+      patchData();
+    };
+  };
+  const handleTableChange = (pagination, filters, sorter) => {
+    console.log(pagination);
+    getDiagnoses(pagination);
+  };
+  const getDiagnoses = async (pagination, isFinished = false) => {
+    setLoading(true);
     const headers = {
       "Content-Type": "application/json",
       Authorization: `JWT ${token.access}`,
     };
-    const diagnoses = await axios.get(diagnosesURL(), { headers: headers });
-    const data = diagnoses.data.map((v) => ({
+    const diagnoses = await axios.get(diagnosesURL(pagination, isFinished), {
+      headers: headers,
+    });
+    const data = diagnoses.data.results.map((v) => ({
       id: v.id, //诊断ID
       key: v.id,
       name: v.patient.name,
@@ -113,8 +170,14 @@ const ToDoList = ({ token }) => {
       itemid: v.items[0].id,
       description: v.items[0].pathologyPicture.description,
     }));
-    console.log(data);
+
     setDiagnoses(data);
+
+    setPagination({
+      ...pagination,
+      total: diagnoses.data.count,
+    });
+    setLoading(false);
   };
 
   //   const data = [
@@ -159,6 +222,9 @@ const ToDoList = ({ token }) => {
       className="todolist-container"
       dataSource={diagnoses}
       columns={columns}
+      pagination={pagination}
+      loading={loading}
+      onChange={handleTableChange}
       title={() => "待诊断列表"}
     />
   );

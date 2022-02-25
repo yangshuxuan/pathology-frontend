@@ -6,9 +6,9 @@ import { loginURL } from "../../api";
 const Demo = ({setToken}) => {
   const onFinish = async (values) => {
     
-    console.log('Success:', values);
+    // console.log('Success:', values);
     const image = await axios.post(loginURL(),values);
-    console.log(image.data);
+    // console.log(image.data);
     setToken(image.data);
     // setFromDatabase(true);
     // setAnnotable(image.data);

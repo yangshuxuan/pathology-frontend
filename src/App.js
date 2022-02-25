@@ -27,19 +27,21 @@ function App() {
   const [image, setImage] = useState(); //大图
   const [curDiagnosisItem, setCurDiagnosisItem] = useState();
   const [curDiagnosis, setCurDiagnosis] = useState();
+  const [syncBetween,setSyncBetween] = useState(false)
+  const [othersyncBetween,setOtherSyncBetween] = useState(false)
 
   const [token, setToken] = useState();
 
-  useEffect(() => {
-    curDiagnosisItem &&
-      getImage(curDiagnosisItem) &&
-      getAnnotable(curDiagnosisItem);
-  }, [curDiagnosisItem]);
-  useEffect(() => {
-    if (token) {
-      getDiagnoses();
-    }
-  }, [token]);
+  // useEffect(() => {
+  //   curDiagnosisItem &&
+  //     getImage(curDiagnosisItem) &&
+  //     getAnnotable(curDiagnosisItem);
+  // }, [curDiagnosisItem]);
+  // useEffect(() => {
+  //   if (token) {
+  //     getDiagnoses();
+  //   }
+  // }, [token]);
   const getDiagnoses = async () => {
     const headers = {
       "Content-Type": "application/json",
@@ -78,14 +80,14 @@ function App() {
   if (!token) {
     return <Demo setToken={setToken} />;
   }
-  console.log(token);
+
 
   return (
     <Layout className="layout">
       <Header>
-        <div className="logo" />
+        <div className="logo" ></div>
         <Menu theme="dark" mode="horizontal" defaultSelectedKeys={["2"]}>
-          {new Array(15).fill(null).map((_, index) => {
+          {new Array(3).fill(null).map((_, index) => {
             const key = index + 1;
             return <Menu.Item key={key}>{`nav ${key}`}</Menu.Item>;
           })}
@@ -95,8 +97,8 @@ function App() {
       <Switch location={location} key={location.pathname}>
         <Route path="/label/" exact>
           <div className="content-container">
-            <ToDoList token={token} />
-            <CompletedList />
+            <ToDoList token={token} syncBetween={syncBetween} setSyncBetween={setSyncBetween} setOtherSyncBetween={setOtherSyncBetween}/>
+            <CompletedList token={token} setSyncBetween={setSyncBetween} othersyncBetween={othersyncBetween} setOtherSyncBetween={setOtherSyncBetween}/>
           </div>
         </Route>
         <Route path="/label/work/:id">
@@ -183,7 +185,7 @@ function App() {
       </Switch>
 
       <Footer style={{ textAlign: "center" }}>
-        Ant Design ©2018 Created by Ant UED
+        病理诊断 ©2022 Created by 苏州海康华智
       </Footer>
     </Layout>
   );

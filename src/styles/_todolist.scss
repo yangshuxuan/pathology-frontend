@@ -1,5 +1,7 @@
 .todolist-container {
-  height: 80vh;
+  min-height: 30vh;
   width: 90%;
   margin-left: 5%;
+
+  // overflow:scroll;
 }
