@@ -15,6 +15,7 @@ import "./styles/app.scss";
 import CompletedList from "./components/CompletedList";
 import { Switch, Route, useLocation } from "react-router-dom";
 import Diagnose from "./pages/Diagnose";
+import useToken from "./useToken";
 function App() {
   const [annotationStatus, setAnnotationStatus] = useState(false); //控制页面显示
   const [libraryStatus, setLibraryStatus] = useState(false);
@@ -27,10 +28,10 @@ function App() {
   const [image, setImage] = useState(); //大图
   const [curDiagnosisItem, setCurDiagnosisItem] = useState();
   const [curDiagnosis, setCurDiagnosis] = useState();
-  const [syncBetween,setSyncBetween] = useState(false)
-  const [othersyncBetween,setOtherSyncBetween] = useState(false)
+  const [syncBetween, setSyncBetween] = useState(false);
+  const [othersyncBetween, setOtherSyncBetween] = useState(false);
 
-  const [token, setToken] = useState();
+  const { token, setToken } = useToken();
 
   // useEffect(() => {
   //   curDiagnosisItem &&
@@ -76,16 +77,16 @@ function App() {
     setHistoryannotable(historyimage.data);
     setAnnotable(image.data);
   };
+  console.log(token)
 
   if (!token) {
     return <Demo setToken={setToken} />;
   }
 
-
   return (
     <Layout className="layout">
       <Header>
-        <div className="logo" ></div>
+        <div className="logo"></div>
         <Menu theme="dark" mode="horizontal" defaultSelectedKeys={["2"]}>
           {new Array(3).fill(null).map((_, index) => {
             const key = index + 1;
@@ -97,8 +98,18 @@ function App() {
       <Switch location={location} key={location.pathname}>
         <Route path="/label/" exact>
           <div className="content-container">
-            <ToDoList token={token} syncBetween={syncBetween} setSyncBetween={setSyncBetween} setOtherSyncBetween={setOtherSyncBetween}/>
-            <CompletedList token={token} setSyncBetween={setSyncBetween} othersyncBetween={othersyncBetween} setOtherSyncBetween={setOtherSyncBetween}/>
+            <ToDoList
+              token={token}
+              syncBetween={syncBetween}
+              setSyncBetween={setSyncBetween}
+              setOtherSyncBetween={setOtherSyncBetween}
+            />
+            <CompletedList
+              token={token}
+              setSyncBetween={setSyncBetween}
+              othersyncBetween={othersyncBetween}
+              setOtherSyncBetween={setOtherSyncBetween}
+            />
           </div>
         </Route>
         <Route path="/label/work/:id">

@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { Table, Tabs } from "antd";
-import { reportOneURL, reportSetURL,largeimageLabelitemsURL } from "../api";
+import { reportOneURL, reportSetURL, largeimageLabelitemsURL } from "../api";
 import "antd/dist/antd.css";
 import Report from "./Report";
 const { TabPane } = Tabs;
@@ -40,8 +40,7 @@ const AnnotationTableSimple = ({
     setAnnotable(image.data);
   };
   useEffect(() => {
-    getAnnotable(curDiagnosis)
-
+    getAnnotable(curDiagnosis);
   }, []);
   useEffect(() => {
     async function fetchData() {
@@ -56,11 +55,15 @@ const AnnotationTableSimple = ({
         const annotableID = annotable.map((v) => v.id);
 
         setOneSelectedRowKeys(
-          reportSet.data[0].labelitems.filter((v) => annotableID.some((p) =>v == p))
+          reportSet.data[0].labelitems.filter((v) =>
+            annotableID.some((p) => v == p)
+          )
         );
         const historyannotableID = historyannotable.map((v) => v.id);
         setTwoSelectedRowKeys(
-          reportSet.data[0].labelitems.filter((v) => historyannotableID.some((p) =>v == p))
+          reportSet.data[0].labelitems.filter((v) =>
+            historyannotableID.some((p) => v == p)
+          )
         );
         setReportID(reportSet.data[0].id);
         // console.log(reportSet.data[0].id);
@@ -69,7 +72,7 @@ const AnnotationTableSimple = ({
       }
     }
     fetchData();
-  }, [annotable,historyannotable]);
+  }, [annotable, historyannotable]);
   useEffect(() => {
     async function patchData() {
       if (reportID) {
@@ -87,7 +90,8 @@ const AnnotationTableSimple = ({
       }
     }
     patchData();
-  }, [reportID,oneSelectedRowKeys, twoSelectedRowKeys]);
+  }, [reportID, oneSelectedRowKeys, twoSelectedRowKeys]);
+
   const dataSource = annotable.map((v) => ({
     category: v.category,
     id: v.id.split("-")[0],
@@ -95,6 +99,14 @@ const AnnotationTableSimple = ({
     doctor: v.doctor.username,
     confidence: v.confidence,
   }));
+  // new Set(annotable.map((v) => v.category))
+  const categoryFilters = [...new Set(annotable.map((v) => v.category))].map(
+    (v) => ({
+      text: v,
+      value: v,
+    })
+  );
+
   const historyDataSource = historyannotable.map((v) => ({
     category: v.category,
     id: v.id.split("-")[0],
@@ -141,11 +153,16 @@ const AnnotationTableSimple = ({
       title: "分类",
       dataIndex: "category",
       key: "category",
+
+      filters: categoryFilters,
+      onFilter: (value, record) => record.category === value,
     },
     {
       title: "置信度",
       dataIndex: "confidence",
       key: "confidence",
+      defaultSortOrder: "descend",
+      sorter: (a, b) => a.confidence - b.confidence,
     },
     {
       title: "医生",
@@ -153,60 +170,59 @@ const AnnotationTableSimple = ({
       key: "doctor",
     },
   ];
-  return (
-    
-      <Tabs defaultActiveKey="1" style={{height:"90vh",overflow:"scroll"}}>
-        <TabPane tab="当前标注" key="1">
-          <Table
-            rowSelection={{
-              type: "checkbox",
-              ...rowSelection,
-            }}
-            onRow={(record, rowIndex) => {
-              return {
-                onClick: (event) => {
-                  anno.panTo(`#${record.key}`, false);
-                  const p = annotable.find((v) => v.id === record.key);
-                  viewer.viewport.zoomTo(p.zoomLevel);
-                },
-                onDoubleClick: (event) => {}, // double click row
-                onContextMenu: (event) => {}, // right button click row
-                onMouseEnter: (event) => {}, // mouse enter row
-                onMouseLeave: (event) => {}, // mouse leave row
-              };
-            }}
-            dataSource={dataSource}
-            columns={columns}
-          />
-        </TabPane>
-        <TabPane tab="历史标注" key="2">
-        <Table
-            rowSelection={{
-              type: "checkbox",
-              ...historyrowSelection,
-            }}
-            onRow={(record, rowIndex) => {
-              return {
-                onClick: (event) => {
-                  anno.panTo(`#${record.key}`, false);
-                  const p = historyannotable.find((v) => v.id === record.key);
-                  viewer.viewport.zoomTo(p.zoomLevel);
-                },
-                onDoubleClick: (event) => {}, // double click row
-                onContextMenu: (event) => {}, // right button click row
-                onMouseEnter: (event) => {}, // mouse enter row
-                onMouseLeave: (event) => {}, // mouse leave row
-              };
-            }}
-            dataSource={historyDataSource}
-            columns={columns}
-          />
-        </TabPane>
-        <TabPane tab="病理报告" key="3">
-          <Report token = {token}/>
 
-        </TabPane>
-      </Tabs>
+  return (
+    <Tabs defaultActiveKey="1" style={{ height: "90vh", overflow: "scroll" }}>
+      <TabPane tab="当前标注" key="1">
+        <Table
+          rowSelection={{
+            type: "checkbox",
+            ...rowSelection,
+          }}
+          onRow={(record, rowIndex) => {
+            return {
+              onClick: (event) => {
+                anno.panTo(`#${record.key}`, false);
+                const p = annotable.find((v) => v.id === record.key);
+                viewer.viewport.zoomTo(p.zoomLevel);
+              },
+              onDoubleClick: (event) => {}, // double click row
+              onContextMenu: (event) => {}, // right button click row
+              onMouseEnter: (event) => {}, // mouse enter row
+              onMouseLeave: (event) => {}, // mouse leave row
+            };
+          }}
+          dataSource={dataSource}
+          columns={columns}
+        />
+      </TabPane>
+      <TabPane tab="历史标注" key="2">
+        <Table
+          rowSelection={{
+            type: "checkbox",
+            ...historyrowSelection,
+          }}
+          onRow={(record, rowIndex) => {
+            return {
+              onClick: (event) => {
+                anno.panTo(`#${record.key}`, false);
+                const p = historyannotable.find((v) => v.id === record.key);
+                viewer.viewport.zoomTo(p.zoomLevel);
+              },
+              onDoubleClick: (event) => {}, // double click row
+              onContextMenu: (event) => {}, // right button click row
+              onMouseEnter: (event) => {}, // mouse enter row
+              onMouseLeave: (event) => {}, // mouse leave row
+            };
+          }}
+          dataSource={historyDataSource}
+          columns={columns}
+        />
+      </TabPane>
+      <TabPane tab="病理报告" key="3">
+        <Report token={token} />
+      </TabPane>
+    </Tabs>
   );
 };
 export default AnnotationTableSimple;
