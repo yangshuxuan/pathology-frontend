@@ -25,4 +25,5 @@ COPY --from=builder /app/build .
 #ENTRYPOINT ["nginx", "-g", "daemon off;"]
 COPY entrypoint.sh ./
 RUN chmod u+x ./entrypoint.sh
+COPY default.conf /etc/nginx/conf.d/default.conf
 ENTRYPOINT ["./entrypoint.sh"]
